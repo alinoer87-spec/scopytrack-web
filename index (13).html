@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScoopTrack — Absensi Karyawan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root{
+    --cream:#FFFBF3;
+    --vanilla:#FFF3D9;
+    --choco:#4A2E1F;
+    --choco-soft:#8A6A56;
+    --strawberry:#F2879B;
+    --strawberry-dark:#D9526B;
+    --mint:#7FD1B9;
+    --mint-dark:#3F9E86;
+    --waffle:#E8A94A;
+    --waffle-dark:#C7842B;
+    --line:#EEDFC2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    font-family:'Nunito',sans-serif;
+    color:var(--choco);
+    display:flex;
+    justify-content:center;
+  }
+  .app{
+    width:100%;
+    max-width:460px;
+    min-height:100vh;
+    background:var(--cream);
+    padding-bottom:40px;
+  }
+  header.top{
+    padding:22px 20px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-bottom:3px solid var(--line);
+    position:sticky;
+    top:0;
+    background:var(--cream);
+    z-index:5;
+  }
+  .cone{
+    width:42px;height:42px;flex:none;
+  }
+  .brand h1{
+    font-family:'Baloo 2',sans-serif;
+    font-size:22px;
+    margin:0;
+    line-height:1;
+    color:var(--choco);
+  }
+  .brand p{
+    margin:2px 0 0;
+    font-size:12px;
+    color:var(--choco-soft);
+    font-weight:700;
+  }
+  .roleSwitch{
+    margin:16px 20px 4px;
+    display:flex;
+    background:var(--vanilla);
+    border-radius:999px;
+    padding:4px;
+    gap:4px;
+  }
+  .roleSwitch button{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px 8px;
+    border-radius:999px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color:var(--choco-soft);
+    cursor:pointer;
+  }
+  .roleSwitch button.active{
+    background:var(--choco);
+    color:var(--cream);
+  }
+  main{padding:18px 20px 10px;}
+  .card{
+    background:#fff;
+    border:2px solid var(--line);
+    border-radius:20px;
+    padding:18px;
+    margin-bottom:16px;
+  }
+  .card h2{
+    font-family:'Baloo 2',sans-serif;
+    font-size:16px;
+    margin:0 0 12px;
+  }
+  label{
+    display:block;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:var(--choco-soft);
+    margin-bottom:6px;
+  }
+  select, input[type=text], input[type=date], textarea{
+    width:100%;
+    padding:11px 12px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    font-family:'Nunito',sans-serif;
+    font-size:14px;
+    color:var(--choco);
+    background:var(--cream);
+    margin-bottom:14px;
+  }
+  textarea{resize:vertical;min-height:60px;}
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    width:100%;
+    border:none;
+    padding:13px 14px;
+    border-radius:14px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    color:#fff;
+  }
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-mint{background:var(--mint-dark);}
+  .btn-strawberry{background:var(--strawberry-dark);}
+  .btn-waffle{background:var(--waffle-dark);}
+  .btn-outline{
+    background:transparent;
+    border:2px solid var(--choco);
+    color:var(--choco);
+  }
+  .btn-small{padding:8px 10px;font-size:12px;border-radius:10px;width:auto;}
+  .row2{display:flex;gap:10px;}
+  .row2 > div{flex:1;}
+  .statusRow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .statusRow:last-child{border-bottom:none;}
+  .pill{
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:800;
+    text-transform:uppercase;
+  }
+  .pill-pending{background:#FCE9C7;color:var(--waffle-dark);}
+  .pill-approved{background:#D9F2EB;color:var(--mint-dark);}
+  .pill-rejected{background:#FAD9DF;color:var(--strawberry-dark);}
+  .empRow{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .empRow:last-child{border-bottom:none;}
+  .thumb{
+    width:44px;height:44px;border-radius:10px;object-fit:cover;
+    border:2px solid var(--line);
+  }
+  .attCard{
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:12px;
+    margin-bottom:10px;
+  }
+  .attCard .name{font-family:'Baloo 2',sans-serif;font-size:15px;margin-bottom:6px;}
+  .attCard .meta{font-size:12px;color:var(--choco-soft);margin:2px 0;}
+  .attCard .meta a{color:var(--mint-dark);font-weight:700;text-decoration:none;}
+  .thumbsRow{display:flex;gap:8px;margin-top:8px;}
+  .empty{
+    text-align:center;
+    color:var(--choco-soft);
+    font-size:13px;
+    padding:20px 10px;
+  }
+  .muted{color:var(--choco-soft);font-size:12px;}
+  .req-actions{display:flex;gap:8px;margin-top:8px;}
+  .req-actions .btn{flex:1;}
+  .toast{
+    position:fixed;
+    bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--choco);color:#fff;
+    padding:10px 18px;border-radius:999px;
+    font-size:13px;font-weight:700;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);
+    opacity:0;pointer-events:none;
+    transition:opacity .25s ease, bottom .25s ease;
+    z-index:50;
+  }
+  .toast.show{opacity:1;bottom:34px;}
+  .setupBox{
+    display:flex;gap:8px;margin-bottom:10px;
+  }
+  .setupBox input{margin-bottom:0;}
+  .remove-x{
+    border:none;background:transparent;color:var(--strawberry-dark);
+    font-weight:800;cursor:pointer;font-size:16px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <svg class="cone" viewBox="0 0 64 64">
+      <circle cx="22" cy="20" r="14" fill="#7FD1B9"/>
+      <circle cx="36" cy="16" r="12" fill="#F2879B"/>
+      <circle cx="30" cy="28" r="13" fill="#FFF3D9" stroke="#E8A94A" stroke-width="2"/>
+      <path d="M18 32 L46 32 L32 60 Z" fill="#E8A94A"/>
+      <path d="M20 36 L44 36" stroke="#C7842B" stroke-width="1.5"/>
+      <path d="M23 42 L41 42" stroke="#C7842B" stroke-width="1.5"/>
+      <path d="M26 48 L38 48" stroke="#C7842B" stroke-width="1.5"/>
+    </svg>
+    <div class="brand">
+      <h1>ScoopTrack</h1>
+      <p>Absensi & izin karyawan — dipantau dari mana saja</p>
+    </div>
+  </header>
+
+  <div class="roleSwitch">
+    <button id="roleEmpBtn" class="active">🍨 Karyawan</button>
+    <button id="roleSupBtn">📋 Supervisor</button>
+  </div>
+
+  <main id="main"></main>
+  <div class="toast" id="toast"></div>
+
+  <div id="pwModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#fff; border-radius:18px; padding:24px; width:100%; max-width:320px;">
+      <h2 style="font-family:'Baloo 2',sans-serif; margin:0 0 4px; font-size:17px;">🔒 Akses Supervisor</h2>
+      <p style="font-size:13px; color:var(--choco-soft); margin:0 0 14px;">Masukkan kata sandi supervisor untuk melanjutkan.</p>
+      <input type="password" id="pwInput" placeholder="Kata sandi" style="margin-bottom:8px;">
+      <div id="pwError" style="display:none; color:var(--strawberry-dark); font-size:12px; font-weight:700; margin-bottom:10px;">Kata sandi salah, coba lagi.</div>
+      <div style="display:flex; gap:8px; margin-top:6px;">
+        <button class="btn btn-mint" id="btnPwSubmit" style="flex:1;">Masuk</button>
+        <button class="btn btn-outline" id="btnPwCancel" style="flex:1;">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, documentId } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDEunGw1l0oTxMvbzfiQUXROhyhe9GjKyk",
+  authDomain: "scoppytrack.firebaseapp.com",
+  projectId: "scoppytrack",
+  storageBucket: "scoppytrack.firebasestorage.app",
+  messagingSenderId: "425905321430",
+  appId: "1:425905321430:web:2c3b015b84a26ad82b6077"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const COLLECTION = 'scooptrack';
+
+// ---------- Utilities ----------
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function nowTime(){ return new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function fmtDate(d){
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('id-ID',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
+}
+
+// ---------- Storage helpers (Firebase Firestore) ----------
+// Key-value dokumen: koleksi "scooptrack", tiap dokumen menyimpan { value: <data> }
+async function storeGet(key){
+  try{
+    const ref = doc(db, COLLECTION, key);
+    const snap = await getDoc(ref);
+    return snap.exists() ? snap.data().value : null;
+  }catch(e){
+    console.error('storeGet error', e);
+    return null;
+  }
+}
+async function storeSet(key, value){
+  try{
+    const ref = doc(db, COLLECTION, key);
+    await setDoc(ref, { value: value, updatedAt: Date.now() });
+    return true;
+  }catch(e){
+    console.error('storage error', e);
+    showToast('⚠️ Gagal menyimpan: '+(e.message||'error tidak diketahui'));
+    return false;
+  }
+}
+
+// ---------- App state ----------
+let role = 'employee';
+let employees = [];       // [{id, name, pin, status,...}]
+let selectedEmpId = null;
+let leaveRequests = [];   // [{id, empId, type, date, note, status}]
+let viewDate = todayStr();
+let attendance = {};      // for viewDate: { empId: {checkIn:{...}, checkOut:{...}} }
+
+// ---------- Login karyawan (Nama + PIN) ----------
+const EMP_SESSION_KEY = 'scooptrack_emp_session';
+function getLoggedInEmpId(){ return sessionStorage.getItem(EMP_SESSION_KEY); }
+function setLoggedInEmpId(id){ sessionStorage.setItem(EMP_SESSION_KEY, id); }
+function clearLoggedInEmp(){ sessionStorage.removeItem(EMP_SESSION_KEY); }
+
+async function loadAll(){
+  employees = (await storeGet('employees')) || [];
+  leaveRequests = (await storeGet('leave-requests')) || [];
+  attendance = (await storeGet('attendance_'+viewDate)) || {};
+}
+async function saveEmployees(){ return await storeSet('employees', employees); }
+async function saveLeaveRequests(){ return await storeSet('leave-requests', leaveRequests); }
+async function saveAttendance(){ return await storeSet('attendance_'+viewDate, attendance); }
+
+// ---------- Photo helper: resize to keep storage small ----------
+function fileToResizedDataURL(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxW = 360;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width*scale;
+        canvas.height = img.height*scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function getLocation(){
+  return new Promise((resolve)=>{
+    if(!navigator.geolocation){ resolve({ok:false, reason:'Perangkat tidak mendukung GPS'}); return; }
+    navigator.geolocation.getCurrentPosition(
+      pos=>resolve({ok:true, lat:pos.coords.latitude, lng:pos.coords.longitude}),
+      err=>{
+        let reason = 'Gagal mengambil lokasi';
+        if(err.code===1) reason = 'Izin lokasi ditolak — aktifkan di pengaturan browser';
+        else if(err.code===2) reason = 'Lokasi tidak tersedia (coba di luar ruangan/sinyal GPS)';
+        else if(err.code===3) reason = 'Waktu habis mengambil lokasi, coba lagi';
+        resolve({ok:false, reason});
+      },
+      {enableHighAccuracy:true, timeout:10000}
+    );
+  });
+}
+
+// ---------- Render root ----------
+function refreshUI(){
+  const main = document.getElementById('main');
+  if(role==='employee') renderEmployee(main);
+  else renderSupervisor(main);
+}
+
+async function loadAndRender(){
+  const main = document.getElementById('main');
+  main.innerHTML = '<div class="empty">Memuat data...</div>';
+  await loadAll();
+  refreshUI();
+}
+
+// ================= EMPLOYEE VIEW =================
+function renderEmployee(main){
+  const activeEmployees = employees.filter(e=>(e.status||'aktif')==='aktif');
+  if(employees.length===0){
+    main.innerHTML = '<div class="card"><div class="empty">Belum ada daftar karyawan.<br>Minta supervisor menambahkan nama Anda dulu di tab <b>Supervisor</b>.</div></div>';
+    return;
+  }
+
+  const loggedInId = getLoggedInEmpId();
+  const loggedInEmp = loggedInId ? activeEmployees.find(e=>e.id===loggedInId) : null;
+
+  if(!loggedInEmp && activeEmployees.length===0){
+    main.innerHTML = '<div class="card"><div class="empty">Tidak ada karyawan berstatus aktif saat ini.</div></div>';
+    return;
+  }
+
+  if(!loggedInEmp){
+    // Belum login -> tampilkan form login (Nama + PIN)
+    clearLoggedInEmp();
+    main.innerHTML = `
+      <div class="card">
+        <h2>🔒 Login Karyawan</h2>
+        <label>Nama</label>
+        <select id="loginEmpSelect">
+          ${activeEmployees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}
+        </select>
+        <label>PIN</label>
+        <input type="password" id="loginPinInput" placeholder="PIN 4 digit" inputmode="numeric">
+        <div id="loginError" style="display:none; color:var(--strawberry-dark); font-size:12px; font-weight:700; margin:-6px 0 12px;">Nama atau PIN salah.</div>
+        <button class="btn btn-mint" id="btnEmpLogin">Masuk</button>
+      </div>
+    `;
+    document.getElementById('btnEmpLogin').onclick = ()=>{
+      const empId = document.getElementById('loginEmpSelect').value;
+      const pin = document.getElementById('loginPinInput').value.trim();
+      const emp = activeEmployees.find(e=>e.id===empId);
+      if(emp && pin && String(emp.pin||'') === pin){
+        setLoggedInEmpId(emp.id);
+        selectedEmpId = emp.id;
+        refreshUI();
+      }else{
+        document.getElementById('loginError').style.display = 'block';
+      }
+    };
+    document.getElementById('loginPinInput').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') document.getElementById('btnEmpLogin').click();
+    });
+    return;
+  }
+
+  selectedEmpId = loggedInEmp.id;
+  const emp = loggedInEmp;
+  const att = attendance[selectedEmpId] || {};
+
+  main.innerHTML = `
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div class="muted">MASUK SEBAGAI</div>
+        <div style="font-family:'Baloo 2',sans-serif; font-size:17px;">${emp.name}</div>
+        <div class="muted">${fmtDate(viewDate)}</div>
+      </div>
+      <button class="btn-small btn-outline" id="btnEmpLogout">Keluar</button>
+    </div>
+
+    <div class="card">
+      <h2>🍦 Absensi Hari Ini</h2>
+      <div class="statusRow">
+        <span>Absen Masuk</span>
+        <span>${att.checkIn ? '✅ '+att.checkIn.time+(att.checkIn.lat?' 📍':' ⚠️ lokasi gagal') : '— belum absen'}</span>
+      </div>
+      <div class="statusRow">
+        <span>Absen Istirahat</span>
+        <span>${att.breakTime ? '✅ '+att.breakTime.time+(att.breakTime.lat?' 📍':' ⚠️ lokasi gagal') : '— belum absen'}</span>
+      </div>
+      <div class="statusRow">
+        <span>Absen Pulang</span>
+        <span>${att.checkOut ? '✅ '+att.checkOut.time+(att.checkOut.lat?' 📍':' ⚠️ lokasi gagal') : '— belum absen'}</span>
+      </div>
+      <div style="height:12px"></div>
+      <button class="btn btn-mint" id="btnCheckIn" ${att.checkIn?'disabled':''} style="margin-bottom:8px;">Absen Masuk</button>
+      ${att.checkIn && !att.checkIn.photo ? `<button class="btn btn-outline btn-small camopen-btn" data-kind="checkIn" style="width:100%; margin-bottom:10px;">📷 Buka Kamera untuk Foto</button>` : '<div style="height:2px;margin-bottom:8px;"></div>'}
+      <button class="btn btn-waffle" id="btnBreak" ${(!att.checkIn || att.breakTime || att.checkOut)?'disabled':''} style="margin-bottom:8px;">Absen Istirahat</button>
+      ${att.breakTime && !att.breakTime.photo ? `<button class="btn btn-outline btn-small camopen-btn" data-kind="breakTime" style="width:100%; margin-bottom:10px;">📷 Buka Kamera untuk Foto</button>` : '<div style="height:2px;margin-bottom:8px;"></div>'}
+      <button class="btn btn-strawberry" id="btnCheckOut" ${(!att.checkIn || att.checkOut)?'disabled':''}>Absen Pulang</button>
+      ${att.checkOut && !att.checkOut.photo ? `<button class="btn btn-outline btn-small camopen-btn" data-kind="checkOut" style="width:100%; margin-top:10px;">📷 Buka Kamera untuk Foto</button>` : ''}
+      <div class="muted" style="margin-top:10px;">📍 Lokasi diambil otomatis saat absen. Foto bersifat opsional (tergantung dukungan browser).</div>
+      <input type="file" accept="image/*" id="photoInput" style="display:none">
+    </div>
+
+    <div id="camModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100; align-items:center; justify-content:center; flex-direction:column; padding:20px;">
+      <video id="camVideo" autoplay playsinline style="width:100%; max-width:340px; border-radius:16px; background:#000;"></video>
+      <div id="camError" style="display:none; color:#fff; background:var(--strawberry-dark); padding:10px 14px; border-radius:10px; margin-top:14px; font-size:13px; text-align:center; max-width:340px;"></div>
+      <div style="display:flex; gap:10px; margin-top:16px; width:100%; max-width:340px;">
+        <button class="btn btn-mint" id="btnCapture" style="flex:1;">📸 Ambil</button>
+        <button class="btn btn-outline" id="btnCancelCam" style="flex:1; color:#fff; border-color:#fff;">Batal</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📝 Ajukan Izin / Sakit / Cuti</h2>
+      <label>Jenis</label>
+      <select id="leaveType">
+        <option value="izin">Izin</option>
+        <option value="sakit">Sakit</option>
+        <option value="cuti">Cuti</option>
+      </select>
+      <label>Tanggal</label>
+      <input type="date" id="leaveDate" value="${todayStr()}">
+      <label>Keterangan</label>
+      <textarea id="leaveNote" placeholder="Contoh: demam, izin acara keluarga, dsb."></textarea>
+      <button class="btn btn-waffle" id="btnSubmitLeave">Kirim Pengajuan</button>
+    </div>
+
+    <div class="card">
+      <h2>📋 Riwayat Pengajuan Saya</h2>
+      <div id="myLeaveList"></div>
+    </div>
+  `;
+
+  document.getElementById('btnEmpLogout').onclick = ()=>{
+    clearLoggedInEmp();
+    refreshUI();
+  };
+
+  document.getElementById('btnCheckIn').onclick = ()=>doAttendance('checkIn');
+  document.getElementById('btnBreak').onclick = ()=>doAttendance('breakTime');
+  document.getElementById('btnCheckOut').onclick = ()=>doAttendance('checkOut');
+  document.querySelectorAll('.camopen-btn').forEach(btn=>{
+    btn.onclick = ()=>openLiveCamera(btn.dataset.kind);
+  });
+  document.getElementById('btnCapture').onclick = capturePhoto;
+  document.getElementById('btnCancelCam').onclick = closeLiveCamera;
+  document.getElementById('btnSubmitLeave').onclick = submitLeave;
+
+  const myLeaves = leaveRequests.filter(l=>l.empId===selectedEmpId).sort((a,b)=>b.date.localeCompare(a.date));
+  const listEl = document.getElementById('myLeaveList');
+  if(myLeaves.length===0){
+    listEl.innerHTML = '<div class="empty">Belum ada pengajuan.</div>';
+  }else{
+    listEl.innerHTML = myLeaves.map(l=>`
+      <div class="statusRow">
+        <span>${l.type.toUpperCase()} · ${l.date}</span>
+        <span class="pill pill-${l.status}">${l.status}</span>
+      </div>
+    `).join('');
+  }
+}
+
+async function doAttendance(kind){
+  const labels = {checkIn:'Absen Masuk', breakTime:'Absen Istirahat', checkOut:'Absen Pulang'};
+  const label = labels[kind];
+  showToast('Mengambil lokasi...');
+  const loc = await getLocation();
+  if(!attendance[selectedEmpId]) attendance[selectedEmpId] = {};
+  attendance[selectedEmpId][kind] = {
+    time: nowTime(),
+    lat: (loc && loc.ok) ? loc.lat : null,
+    lng: (loc && loc.ok) ? loc.lng : null,
+    photo: (attendance[selectedEmpId][kind] && attendance[selectedEmpId][kind].photo) || null
+  };
+  const ok = await saveAttendance();
+  if(ok!==false){
+    if(loc && loc.ok){
+      showToast(label+' tercatat ✅ (lokasi tersimpan)');
+    }else{
+      showToast(label+' tercatat, tapi lokasi gagal: '+(loc?loc.reason:'tidak diketahui'));
+    }
+  }
+  refreshUI();
+}
+
+function attachPhoto(kind){
+  const fileInput = document.getElementById('photoInput');
+  fileInput.onchange = async ()=>{
+    if(fileInput.files && fileInput.files[0]){
+      const dataUrl = await fileToResizedDataURL(fileInput.files[0]);
+      if(attendance[selectedEmpId] && attendance[selectedEmpId][kind]){
+        attendance[selectedEmpId][kind].photo = dataUrl;
+        const ok = await saveAttendance();
+        if(ok!==false) showToast('Foto ditambahkan ✅');
+        refreshUI();
+      }
+    }
+    fileInput.value = '';
+  };
+  fileInput.click();
+}
+
+// ---------- Kamera langsung (getUserMedia) ----------
+let currentStream = null;
+let currentCamKind = null;
+
+async function openLiveCamera(kind){
+  currentCamKind = kind;
+  const modal = document.getElementById('camModal');
+  const video = document.getElementById('camVideo');
+  const errBox = document.getElementById('camError');
+  errBox.style.display = 'none';
+  modal.style.display = 'flex';
+
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    errBox.textContent = 'Browser ini tidak mendukung akses kamera langsung.';
+    errBox.style.display = 'block';
+    return;
+  }
+  try{
+    currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    video.srcObject = currentStream;
+    video.play();
+  }catch(e){
+    let msg = 'Gagal membuka kamera: ' + (e.message || e.name || 'tidak diketahui');
+    if(e.name === 'NotAllowedError') msg = 'Akses kamera diblokir/ditolak oleh browser atau sistem.';
+    if(e.name === 'NotFoundError') msg = 'Tidak ada kamera yang terdeteksi di perangkat ini.';
+    errBox.textContent = msg;
+    errBox.style.display = 'block';
+  }
+}
+
+function closeLiveCamera(){
+  const modal = document.getElementById('camModal');
+  modal.style.display = 'none';
+  if(currentStream){
+    currentStream.getTracks().forEach(t=>t.stop());
+    currentStream = null;
+  }
+}
+
+async function capturePhoto(){
+  const video = document.getElementById('camVideo');
+  if(!video.videoWidth){ showToast('Kamera belum siap, tunggu sebentar'); return; }
+  const canvas = document.createElement('canvas');
+  const maxW = 360;
+  const scale = Math.min(1, maxW / video.videoWidth);
+  canvas.width = video.videoWidth * scale;
+  canvas.height = video.videoHeight * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+
+  if(!attendance[selectedEmpId]) attendance[selectedEmpId] = {};
+  if(!attendance[selectedEmpId][currentCamKind]) attendance[selectedEmpId][currentCamKind] = {};
+  attendance[selectedEmpId][currentCamKind].photo = dataUrl;
+  const ok = await saveAttendance();
+  if(ok!==false) showToast('Foto berhasil diambil ✅');
+  closeLiveCamera();
+  refreshUI();
+}
+
+async function submitLeave(){
+  const type = document.getElementById('leaveType').value;
+  const date = document.getElementById('leaveDate').value;
+  const note = document.getElementById('leaveNote').value.trim();
+  if(!date){ showToast('Pilih tanggal dulu'); return; }
+  leaveRequests.push({
+    id: uid(), empId: selectedEmpId, type, date, note, status:'pending'
+  });
+  const ok = await saveLeaveRequests();
+  if(ok!==false) showToast('Pengajuan terkirim, menunggu persetujuan');
+  refreshUI();
+}
+
+// ================= SUPERVISOR VIEW =================
+function renderSupervisor(main){
+  const pendingLeaves = leaveRequests.filter(l=>l.status==='pending');
+  const historyLeaves = leaveRequests.filter(l=>l.status!=='pending').sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10);
+
+  main.innerHTML = `
+    <div class="card">
+      <h2>👥 Kelola Karyawan (${employees.length})</h2>
+      <div class="setupBox">
+        <input type="text" id="newEmpName" placeholder="Nama karyawan baru">
+        <input type="text" id="newEmpPin" placeholder="PIN" inputmode="numeric" style="max-width:90px;">
+        <button class="btn btn-mint btn-small" id="btnAddEmp">+ Tambah</button>
+      </div>
+      <div class="muted" style="margin:-6px 0 10px;">PIN dipakai karyawan untuk login (misal 4 angka). Beritahukan PIN ke karyawan yang bersangkutan.</div>
+      <div id="empList"></div>
+    </div>
+
+    <div class="card">
+      <h2>📅 Absensi</h2>
+      <label>Tanggal</label>
+      <input type="date" id="viewDateInput" value="${viewDate}">
+      <div id="attList"></div>
+    </div>
+
+    <div class="card">
+      <h2>⏳ Pengajuan Menunggu (${pendingLeaves.length})</h2>
+      <div id="pendingList"></div>
+    </div>
+
+    <div class="card">
+      <h2>📜 Riwayat Pengajuan Terbaru</h2>
+      <div id="historyList"></div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Rekap Bulanan</h2>
+      <label>Pilih bulan</label>
+      <input type="month" id="recapMonth" value="${viewDate.slice(0,7)}">
+      <button class="btn btn-mint" id="btnBuildRecap">Buat Rekap</button>
+      <div id="recapResult" style="margin-top:14px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔑 Ubah Kata Sandi Supervisor</h2>
+      <label>Kata sandi baru</label>
+      <input type="password" id="newSupPassword" placeholder="Minimal 4 karakter">
+      <button class="btn btn-waffle" id="btnChangePassword">Simpan Kata Sandi</button>
+      <div class="muted" style="margin-top:6px;">Kata sandi ini yang akan diminta setiap kali seseorang membuka tab Supervisor. Bagikan hanya ke orang yang berwenang.</div>
+    </div>
+  `;
+
+  // Employee list management
+  const empListEl = document.getElementById('empList');
+  if(employees.length===0){
+    empListEl.innerHTML = '<div class="empty">Belum ada karyawan. Tambahkan nama di atas.</div>';
+  }else{
+    const statusLabel = {
+      aktif: '🟢 Aktif',
+      phk: '🔴 PHK',
+      resign: '🟠 Mengundurkan Diri',
+      dirumahkan: '🟡 Dirumahkan Sementara'
+    };
+    empListEl.innerHTML = employees.map(e=>{
+      const st = e.status || 'aktif';
+      const dateInfo = (st!=='aktif' && e.statusDate) ? ` · ${e.statusDate}` : '';
+      return `
+      <div class="empRow" style="flex-direction:column; align-items:stretch;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span>${e.name} <span class="muted">${statusLabel[st]||st}${dateInfo} · PIN: ${e.pin||'-'}</span></span>
+          <span>
+            <button class="btn-small btn-outline status-btn" data-id="${e.id}" style="padding:6px 10px;">Ubah Status</button>
+            <button class="btn-small btn-outline resetpin-btn" data-id="${e.id}" style="padding:6px 10px;">Reset PIN</button>
+            <button class="remove-x" data-id="${e.id}" title="Hapus permanen">✕</button>
+          </span>
+        </div>
+        <div class="statusForm" data-id="${e.id}" style="display:none; margin-top:8px; background:var(--vanilla); border-radius:12px; padding:10px;">
+          <label>Status Kepegawaian</label>
+          <select class="statusSelect" data-id="${e.id}">
+            <option value="aktif" ${st==='aktif'?'selected':''}>Aktif</option>
+            <option value="dirumahkan" ${st==='dirumahkan'?'selected':''}>Dirumahkan Sementara</option>
+            <option value="resign" ${st==='resign'?'selected':''}>Mengundurkan Diri</option>
+            <option value="phk" ${st==='phk'?'selected':''}>PHK (Pemutusan Hubungan Kerja)</option>
+          </select>
+          <label>Tanggal Efektif</label>
+          <input type="date" class="statusDateInput" data-id="${e.id}" value="${e.statusDate||todayStr()}">
+          <label>Catatan (opsional)</label>
+          <textarea class="statusNoteInput" data-id="${e.id}" placeholder="Contoh: pelanggaran SOP, habis kontrak, dll.">${e.statusNote||''}</textarea>
+          <button class="btn btn-mint btn-small save-status-btn" data-id="${e.id}">Simpan Status</button>
+        </div>
+      </div>
+    `;}).join('');
+
+    empListEl.querySelectorAll('.status-btn').forEach(btn=>{
+      btn.onclick = ()=>{
+        const form = empListEl.querySelector(`.statusForm[data-id="${btn.dataset.id}"]`);
+        form.style.display = form.style.display==='none' ? 'block' : 'none';
+      };
+    });
+    empListEl.querySelectorAll('.save-status-btn').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const id = btn.dataset.id;
+        const emp = employees.find(x=>x.id===id);
+        if(!emp) return;
+        const backup = {status:emp.status, statusDate:emp.statusDate, statusNote:emp.statusNote};
+        emp.status = empListEl.querySelector(`.statusSelect[data-id="${id}"]`).value;
+        emp.statusDate = empListEl.querySelector(`.statusDateInput[data-id="${id}"]`).value;
+        emp.statusNote = empListEl.querySelector(`.statusNoteInput[data-id="${id}"]`).value.trim();
+        const ok = await saveEmployees();
+        if(ok===false){
+          Object.assign(emp, backup);
+        }else{
+          showToast('Status '+emp.name+' diperbarui');
+        }
+        refreshUI();
+      };
+    });
+    empListEl.querySelectorAll('.remove-x').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const backup = employees;
+        employees = employees.filter(e=>e.id!==btn.dataset.id);
+        const ok = await saveEmployees();
+        if(ok===false) employees = backup;
+        refreshUI();
+      };
+    });
+  }
+  document.getElementById('btnAddEmp').onclick = async ()=>{
+    const input = document.getElementById('newEmpName');
+    const pinInput = document.getElementById('newEmpPin');
+    const name = input.value.trim();
+    const pin = pinInput.value.trim();
+    if(!name){ showToast('Isi nama dulu'); return; }
+    if(!pin || pin.length < 4){ showToast('PIN minimal 4 karakter'); return; }
+    const backup = employees.slice();
+    employees.push({id:uid(), name, pin, status:'aktif', statusDate:null, statusNote:''});
+    const ok = await saveEmployees();
+    if(ok===false){
+      employees = backup; // batalkan perubahan lokal karena gagal simpan
+    }else{
+      showToast(name+' ditambahkan (PIN: '+pin+')');
+      input.value = '';
+      pinInput.value = '';
+    }
+    refreshUI();
+  };
+
+  document.querySelectorAll('.resetpin-btn').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const newPin = prompt('Masukkan PIN baru (minimal 4 karakter) untuk karyawan ini:');
+      if(!newPin || newPin.trim().length < 4){ showToast('PIN tidak valid, dibatalkan'); return; }
+      const emp = employees.find(x=>x.id===btn.dataset.id);
+      if(!emp) return;
+      const backupPin = emp.pin;
+      emp.pin = newPin.trim();
+      const ok = await saveEmployees();
+      if(ok===false){ emp.pin = backupPin; showToast('Gagal menyimpan PIN baru'); }
+      else showToast('PIN '+emp.name+' berhasil direset');
+      refreshUI();
+    };
+  });
+
+  document.getElementById('viewDateInput').onchange = async (e)=>{
+    viewDate = e.target.value;
+    attendance = (await storeGet('attendance_'+viewDate)) || {};
+    refreshUI();
+  };
+
+  // Attendance list for viewDate
+  const attListEl = document.getElementById('attList');
+  if(employees.length===0){
+    attListEl.innerHTML = '<div class="empty">Tambahkan karyawan dulu.</div>';
+  }else{
+    attListEl.innerHTML = employees.map(e=>{
+      const a = attendance[e.id] || {};
+      const inLoc = a.checkIn && a.checkIn.lat ? `<a href="https://maps.google.com/?q=${a.checkIn.lat},${a.checkIn.lng}" target="_blank">Lihat peta</a>` : '';
+      const brkLoc = a.breakTime && a.breakTime.lat ? `<a href="https://maps.google.com/?q=${a.breakTime.lat},${a.breakTime.lng}" target="_blank">Lihat peta</a>` : '';
+      const outLoc = a.checkOut && a.checkOut.lat ? `<a href="https://maps.google.com/?q=${a.checkOut.lat},${a.checkOut.lng}" target="_blank">Lihat peta</a>` : '';
+      const onLeaveToday = leaveRequests.find(l=>l.empId===e.id && l.date===viewDate && l.status==='approved');
+      const empStatus = e.status || 'aktif';
+      if(empStatus!=='aktif'){
+        return `
+          <div class="attCard">
+            <div class="name">${e.name}</div>
+            <div class="meta">⚪ Tidak berstatus aktif — tidak diwajibkan absen</div>
+          </div>
+        `;
+      }
+      const canMangkir = !a.checkIn && !onLeaveToday && !a.mangkir;
+      return `
+        <div class="attCard">
+          <div class="name">${e.name}</div>
+          ${onLeaveToday ? `<div class="meta">🟡 ${onLeaveToday.type.toUpperCase()} (disetujui)</div>` : ''}
+          ${a.mangkir ? `<div class="meta">🔴 Mangkir (Tanpa Keterangan)</div>` : ''}
+          <div class="meta">Masuk: ${a.checkIn ? a.checkIn.time : '—'} ${inLoc}</div>
+          <div class="meta">Istirahat: ${a.breakTime ? a.breakTime.time : '—'} ${brkLoc}</div>
+          <div class="meta">Pulang: ${a.checkOut ? a.checkOut.time : '—'} ${outLoc}</div>
+          <div class="thumbsRow">
+            ${a.checkIn && a.checkIn.photo ? `<img class="thumb" src="${a.checkIn.photo}" title="Selfie masuk">` : ''}
+            ${a.breakTime && a.breakTime.photo ? `<img class="thumb" src="${a.breakTime.photo}" title="Selfie istirahat">` : ''}
+            ${a.checkOut && a.checkOut.photo ? `<img class="thumb" src="${a.checkOut.photo}" title="Selfie pulang">` : ''}
+          </div>
+          ${canMangkir ? `<button class="btn btn-strawberry btn-small mangkir-btn" data-id="${e.id}" style="margin-top:8px;">Tandai Mangkir (TK)</button>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    attListEl.querySelectorAll('.mangkir-btn').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const id = btn.dataset.id;
+        if(!attendance[id]) attendance[id] = {};
+        attendance[id].mangkir = true;
+        const ok = await saveAttendance();
+        if(ok===false){ delete attendance[id].mangkir; }
+        else{ showToast('Ditandai mangkir'); }
+        refreshUI();
+      };
+    });
+  }
+
+  // Pending leave requests
+  const pendingEl = document.getElementById('pendingList');
+  if(pendingLeaves.length===0){
+    pendingEl.innerHTML = '<div class="empty">Tidak ada pengajuan yang menunggu.</div>';
+  }else{
+    pendingEl.innerHTML = pendingLeaves.map(l=>{
+      const empName = (employees.find(e=>e.id===l.empId)||{}).name || '(karyawan dihapus)';
+      return `
+        <div class="attCard">
+          <div class="name">${empName} — ${l.type.toUpperCase()}</div>
+          <div class="meta">Tanggal: ${l.date}</div>
+          ${l.note ? `<div class="meta">Catatan: ${l.note}</div>` : ''}
+          <div class="req-actions">
+            <button class="btn btn-mint btn-small approve-btn" data-id="${l.id}">Setujui</button>
+            <button class="btn btn-strawberry btn-small reject-btn" data-id="${l.id}">Tolak</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    pendingEl.querySelectorAll('.approve-btn').forEach(b=>{
+      b.onclick = async ()=>{ await setLeaveStatus(b.dataset.id, 'approved'); };
+    });
+    pendingEl.querySelectorAll('.reject-btn').forEach(b=>{
+      b.onclick = async ()=>{ await setLeaveStatus(b.dataset.id, 'rejected'); };
+    });
+  }
+
+  // History
+  const histEl = document.getElementById('historyList');
+  if(historyLeaves.length===0){
+    histEl.innerHTML = '<div class="empty">Belum ada riwayat.</div>';
+  }else{
+    histEl.innerHTML = historyLeaves.map(l=>{
+      const empName = (employees.find(e=>e.id===l.empId)||{}).name || '(karyawan dihapus)';
+      return `
+        <div class="statusRow">
+          <span>${empName} · ${l.type.toUpperCase()} · ${l.date}</span>
+          <span class="pill pill-${l.status}">${l.status}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('btnBuildRecap').onclick = buildMonthlyRecap;
+  document.getElementById('btnChangePassword').onclick = async ()=>{
+    const newPass = document.getElementById('newSupPassword').value.trim();
+    if(newPass.length < 4){ showToast('Kata sandi minimal 4 karakter'); return; }
+    const cfg = await getSupervisorConfig();
+    cfg.password = newPass;
+    const ok = await storeSet('config', cfg);
+    if(ok!==false) showToast('Kata sandi berhasil diubah ✅');
+    document.getElementById('newSupPassword').value = '';
+  };
+}
+
+let lastRecapRows = null;
+let lastRecapMonth = null;
+
+async function buildMonthlyRecap(){
+  const month = document.getElementById('recapMonth').value; // "YYYY-MM"
+  if(!month){ showToast('Pilih bulan dulu'); return; }
+  const resultEl = document.getElementById('recapResult');
+  resultEl.innerHTML = '<div class="empty">Menghitung rekap...</div>';
+
+  const startId = 'attendance_'+month+'-01';
+  const endId = 'attendance_'+month+'-31';
+  let monthDocs = [];
+  try{
+    const q = query(
+      collection(db, COLLECTION),
+      where(documentId(), '>=', startId),
+      where(documentId(), '<=', endId)
+    );
+    const snaps = await getDocs(q);
+    snaps.forEach(s=>monthDocs.push(s.data().value));
+  }catch(e){
+    console.error('recap query error', e);
+    showToast('⚠️ Gagal memuat rekap: '+(e.message||''));
+  }
+
+  // hadir count + mangkir count per employee
+  const hadirCount = {};
+  const mangkirCount = {};
+  for(const dayData of monthDocs){
+    if(!dayData) continue;
+    Object.keys(dayData).forEach(empId=>{
+      if(dayData[empId] && dayData[empId].checkIn){
+        hadirCount[empId] = (hadirCount[empId]||0) + 1;
+      }
+      if(dayData[empId] && dayData[empId].mangkir){
+        mangkirCount[empId] = (mangkirCount[empId]||0) + 1;
+      }
+    });
+  }
+
+  // leave counts (approved only) per employee per type, within the month
+  const leaveCount = {}; // empId -> {izin, sakit, cuti}
+  leaveRequests.forEach(l=>{
+    if(l.status==='approved' && l.date.slice(0,7)===month){
+      if(!leaveCount[l.empId]) leaveCount[l.empId] = {izin:0, sakit:0, cuti:0};
+      leaveCount[l.empId][l.type] = (leaveCount[l.empId][l.type]||0) + 1;
+    }
+  });
+
+  const rows = employees.map(e=>{
+    const lc = leaveCount[e.id] || {izin:0, sakit:0, cuti:0};
+    return {
+      name: e.name,
+      status: e.status || 'aktif',
+      hadir: hadirCount[e.id] || 0,
+      izin: lc.izin,
+      sakit: lc.sakit,
+      cuti: lc.cuti,
+      mangkir: mangkirCount[e.id] || 0
+    };
+  });
+
+  lastRecapRows = rows;
+  lastRecapMonth = month;
+
+  if(rows.length===0){
+    resultEl.innerHTML = '<div class="empty">Belum ada karyawan untuk direkap.</div>';
+    return;
+  }
+
+  const statusLabelRecap = {
+    aktif: 'Aktif', phk: 'PHK', resign: 'Mengundurkan Diri', dirumahkan: 'Dirumahkan Sementara'
+  };
+  const nonAktifList = employees.filter(e=>(e.status||'aktif')!=='aktif');
+
+  resultEl.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
+        <thead>
+          <tr style="text-align:left; border-bottom:2px solid var(--line);">
+            <th style="padding:6px 4px;">Nama</th>
+            <th style="padding:6px 4px;">Hadir</th>
+            <th style="padding:6px 4px;">Izin</th>
+            <th style="padding:6px 4px;">Sakit</th>
+            <th style="padding:6px 4px;">Cuti</th>
+            <th style="padding:6px 4px;">Mangkir</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r=>`
+            <tr style="border-bottom:1px solid var(--line);">
+              <td style="padding:6px 4px;">${r.name}</td>
+              <td style="padding:6px 4px;">${r.hadir}</td>
+              <td style="padding:6px 4px;">${r.izin}</td>
+              <td style="padding:6px 4px;">${r.sakit}</td>
+              <td style="padding:6px 4px;">${r.cuti}</td>
+              <td style="padding:6px 4px;">${r.mangkir}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-waffle" id="btnDownloadCsv" style="margin-top:12px;">Unduh CSV</button>
+
+    <div style="margin-top:18px;">
+      <h2 style="font-size:14px;">Status Kepegawaian Non-Aktif</h2>
+      ${nonAktifList.length===0 ? '<div class="empty">Semua karyawan berstatus aktif.</div>' : nonAktifList.map(e=>`
+        <div class="statusRow">
+          <span>${e.name} — ${statusLabelRecap[e.status]||e.status}${e.statusDate ? ' ('+e.statusDate+')' : ''}</span>
+        </div>
+        ${e.statusNote ? `<div class="muted" style="margin:-6px 0 6px;">Catatan: ${e.statusNote}</div>` : ''}
+      `).join('')}
+    </div>
+  `;
+
+  document.getElementById('btnDownloadCsv').onclick = downloadRecapCsv;
+}
+
+function downloadRecapCsv(){
+  if(!lastRecapRows) return;
+  const statusLabelRecap = {
+    aktif: 'Aktif', phk: 'PHK', resign: 'Mengundurkan Diri', dirumahkan: 'Dirumahkan Sementara'
+  };
+  let csv = 'Nama,Status Kepegawaian,Hadir,Izin,Sakit,Cuti,Mangkir (Tanpa Keterangan)\n';
+  lastRecapRows.forEach(r=>{
+    csv += `"${r.name}","${statusLabelRecap[r.status]||r.status}",${r.hadir},${r.izin},${r.sakit},${r.cuti},${r.mangkir}\n`;
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'rekap-absensi-'+lastRecapMonth+'.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function setLeaveStatus(id, status){
+  const req = leaveRequests.find(l=>l.id===id);
+  const backupStatus = req ? req.status : null;
+  if(req){ req.status = status; }
+  const ok = await saveLeaveRequests();
+  if(ok===false){
+    if(req) req.status = backupStatus;
+  }else{
+    showToast('Pengajuan '+status);
+  }
+  refreshUI();
+}
+
+// ---------- Role switch (Supervisor dikunci kata sandi) ----------
+const SUP_SESSION_KEY = 'scooptrack_sup_unlocked';
+let supervisorConfig = null; // {password}
+
+async function getSupervisorConfig(){
+  if(supervisorConfig) return supervisorConfig;
+  let cfg = await storeGet('config');
+  if(!cfg || !cfg.password){
+    cfg = { password: 'eskrim123' }; // kata sandi default, bisa diubah di tab Supervisor
+    await storeSet('config', cfg);
+  }
+  supervisorConfig = cfg;
+  return cfg;
+}
+
+function isSupervisorUnlocked(){
+  return sessionStorage.getItem(SUP_SESSION_KEY) === '1';
+}
+
+function showPasswordModal(){
+  document.getElementById('pwModal').style.display = 'flex';
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwInput').focus();
+}
+function hidePasswordModal(){
+  document.getElementById('pwModal').style.display = 'none';
+}
+
+async function trySupervisorLogin(){
+  const entered = document.getElementById('pwInput').value;
+  const cfg = await getSupervisorConfig();
+  if(entered === cfg.password){
+    sessionStorage.setItem(SUP_SESSION_KEY, '1');
+    hidePasswordModal();
+    activateSupervisorRole();
+  }else{
+    document.getElementById('pwError').style.display = 'block';
+  }
+}
+
+function activateSupervisorRole(){
+  role='supervisor';
+  document.getElementById('roleEmpBtn').classList.remove('active');
+  document.getElementById('roleSupBtn').classList.add('active');
+  refreshUI();
+}
+
+document.getElementById('roleEmpBtn').onclick = ()=>{
+  role='employee';
+  document.getElementById('roleEmpBtn').classList.add('active');
+  document.getElementById('roleSupBtn').classList.remove('active');
+  refreshUI();
+};
+document.getElementById('roleSupBtn').onclick = async ()=>{
+  if(isSupervisorUnlocked()){
+    activateSupervisorRole();
+  }else{
+    await getSupervisorConfig();
+    showPasswordModal();
+  }
+};
+document.getElementById('btnPwSubmit').onclick = trySupervisorLogin;
+document.getElementById('btnPwCancel').onclick = hidePasswordModal;
+document.getElementById('pwInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') trySupervisorLogin();
+});
+
+loadAndRender();
+</script>
+</body>
+</html>
